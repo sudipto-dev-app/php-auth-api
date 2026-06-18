@@ -1,4 +1,3 @@
-Markdown
 # 🔐 PHP Auth API
 
 Complete PHP REST API with MySQL — Login, Signup & Forgot Password.
@@ -7,6 +6,7 @@ Complete PHP REST API with MySQL — Login, Signup & Forgot Password.
 
 ## 📁 Project Structure
 
+```
 auth-api/
 ├── config/
 │   └── database.php        ← DB credentials
@@ -24,34 +24,42 @@ auth-api/
 ├── database.sql            ← MySQL schema
 ├── .htaccess               ← Apache config
 └── README.md
-
+```
 
 ---
 
-## ⚡ Setup (5 Minutes)
+## ⚡ Setup
 
 ### Step 1 — Create Database
 ```sql
 -- Run in MySQL:
 SOURCE /path/to/auth-api/database.sql;
-Step 2 — Set DB credentials
-In the config/database.php file:
+```
 
-PHP
+### Step 2 — Set DB credentials
+`In the config/database.php file:
+```php
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', 'your_password');
 define('DB_NAME', 'auth_api_db');
-Step 3 — Change JWT Secret
-In utils/jwt.php:
+```
 
-PHP
+### Step 3 — JWT Secret change 
+`utils/jwt.php` এ:
+```php
 define('JWT_SECRET', 'random_secret_key');
-Step 4 — Deployment
+```
+
+### Step 4 — Server Deploymentো
 Place the auth-api/ folder in your server's public_html/ or htdocs/ directory.
 
-📡 API Endpoints
-1. Signup
+---
+
+## 📡 API Endpoints
+
+### 1. Signup
+```
 POST /api/signup.php
 
 Request:
@@ -71,7 +79,12 @@ Response (201):
     "email": "rahim@example.com"
   }
 }
-2. Login
+```
+
+---
+
+### 2. Login
+```
 POST /api/login.php
 
 Request:
@@ -93,7 +106,12 @@ Response (200):
     }
   }
 }
-3. Forgot Password (OTP)
+```
+
+---
+
+### 3. Forgot Password (OTP)
+```
 POST /api/forgot-password.php
 
 Request:
@@ -108,7 +126,12 @@ Response (200) — OTP visible in dev mode:
     "dev_otp": "482913"    ← Will not exist in production
   }
 }
-4. Reset Password (New password with OTP)
+```
+
+---
+
+### 4. Reset Password (New password with OTP)
+```
 POST /api/reset-password.php
 
 Request:
@@ -123,7 +146,12 @@ Response (200):
   "success": true,
   "message": "Password reset successful"
 }
-5. Profile (Protected — requires token)
+```
+
+---
+
+### 5. Profile (Protected — requires token)
+```
 GET /api/profile.php
 
 Header:
@@ -142,12 +170,17 @@ Response (200):
     }
   }
 }
-📱 Implementation in App
-Flutter / Dart
-Dart
+```
+
+---
+
+## 📱 mplementation in App
+
+### Flutter / Dart
+```dart
 // Login
 final response = await http.post(
-  Uri.parse('[https://yoursite.com/api/login.php](https://yoursite.com/api/login.php)'),
+  Uri.parse('https://yoursite.com/api/login.php'),
   headers: {'Content-Type': 'application/json'},
   body: jsonEncode({'email': email, 'password': password}),
 );
@@ -156,13 +189,15 @@ final token = data['data']['token']; // Save this in SharedPreferences
 
 // Protected API call
 final profileRes = await http.get(
-  Uri.parse('[https://yoursite.com/api/profile.php](https://yoursite.com/api/profile.php)'),
+  Uri.parse('https://yoursite.com/api/profile.php'),
   headers: {'Authorization': 'Bearer $token'},
 );
-React Native / JavaScript
-JavaScript
+```
+
+### React Native / JavaScript
+```javascript
 // Login
-const res = await fetch('[https://yoursite.com/api/login.php](https://yoursite.com/api/login.php)', {
+const res = await fetch('https://yoursite.com/api/login.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ email, password })
@@ -171,28 +206,33 @@ const data = await res.json();
 const token = data.data.token; // Save in AsyncStorage
 
 // Protected API
-const profile = await fetch('[https://yoursite.com/api/profile.php](https://yoursite.com/api/profile.php)', {
+const profile = await fetch('https://yoursite.com/api/profile.php', {
   headers: { 'Authorization': `Bearer ${token}` }
 });
-🔒 Security Features
-✅ Password bcrypt hashing (never stores plain text)
+```
 
-✅ JWT token authentication
+---
 
-✅ SQL Injection protection (prepared statements)
+## 🔒 Security Features
 
-✅ OTP expiry (1 hour)
+- ✅ Password bcrypt hashing (never stores plain text)
+- ✅ JWT token authentication
+- ✅ SQL Injection protection (prepared statements)
+- ✅ OTP expiry (5 minutes)
+- ✅ config/ folder publicly blocked
+- ✅ Same error message for wrong email/password (brute force protection)
 
-✅ config/ folder access blocked
+---
 
-✅ Consistent error messages for security
+## 📧 Production এ Email Setup
 
-📧 Production Email Setup
-Configure PHPMailer in forgot-password.php:
+`forgot-password.php` Configure PHPMailer:
 
-Bash
+```bash
 composer require phpmailer/phpmailer
-PHP
+```
+
+```php
 use PHPMailer\PHPMailer\PHPMailer;
 $mail = new PHPMailer();
 $mail->isSMTP();
@@ -205,4 +245,6 @@ $mail->addAddress($email);
 $mail->Subject = 'Password Reset OTP';
 $mail->Body = "Your OTP: $otp";
 $mail->send();
-Note: Ensure DEV_MODE is set to false in production!
+```
+
+Note: Make sure to set `DEV_MODE` to false in production!
