@@ -1,3 +1,4 @@
+Markdown
 # 🔐 PHP Auth API
 
 Complete PHP REST API with MySQL — Login, Signup & Forgot Password.
@@ -6,7 +7,6 @@ Complete PHP REST API with MySQL — Login, Signup & Forgot Password.
 
 ## 📁 Project Structure
 
-```
 auth-api/
 ├── config/
 │   └── database.php        ← DB credentials
@@ -24,42 +24,34 @@ auth-api/
 ├── database.sql            ← MySQL schema
 ├── .htaccess               ← Apache config
 └── README.md
-```
+
 
 ---
 
-## ⚡ Setup (৫ মিনিটে)
+## ⚡ Setup (5 Minutes)
 
-### Step 1 — Database তৈরি করো
+### Step 1 — Create Database
 ```sql
--- MySQL এ run করো:
+-- Run in MySQL:
 SOURCE /path/to/auth-api/database.sql;
-```
+Step 2 — Set DB credentials
+In the config/database.php file:
 
-### Step 2 — DB credentials দাও
-`config/database.php` ফাইলে:
-```php
+PHP
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'তোমার_password');
+define('DB_PASS', 'your_password');
 define('DB_NAME', 'auth_api_db');
-```
+Step 3 — Change JWT Secret
+In utils/jwt.php:
 
-### Step 3 — JWT Secret change করো
-`utils/jwt.php` এ:
-```php
-define('JWT_SECRET', 'তোমার_লম্বা_random_secret_key');
-```
+PHP
+define('JWT_SECRET', 'random_secret_key');
+Step 4 — Deployment
+Place the auth-api/ folder in your server's public_html/ or htdocs/ directory.
 
-### Step 4 — Server এ রাখো
-`auth-api/` folder টা তোমার server এর `public_html/` বা `htdocs/` এ রাখো।
-
----
-
-## 📡 API Endpoints
-
-### 1. Signup
-```
+📡 API Endpoints
+1. Signup
 POST /api/signup.php
 
 Request:
@@ -79,12 +71,7 @@ Response (201):
     "email": "rahim@example.com"
   }
 }
-```
-
----
-
-### 2. Login
-```
+2. Login
 POST /api/login.php
 
 Request:
@@ -98,7 +85,7 @@ Response (200):
   "success": true,
   "message": "Login successful",
   "data": {
-    "token": "eyJ...",    ← এই token টা app এ save করো
+    "token": "eyJ...",    ← Save this token in your app
     "user": {
       "id": 1,
       "name": "Rahim",
@@ -106,12 +93,7 @@ Response (200):
     }
   }
 }
-```
-
----
-
-### 3. Forgot Password (OTP পাঠাও)
-```
+3. Forgot Password (OTP)
 POST /api/forgot-password.php
 
 Request:
@@ -119,19 +101,14 @@ Request:
   "email": "rahim@example.com"
 }
 
-Response (200) — Dev mode তে OTP দেখাবে:
+Response (200) — OTP visible in dev mode:
 {
   "success": true,
   "data": {
-    "dev_otp": "482913"    ← Production এ এটা থাকবে না
+    "dev_otp": "482913"    ← Will not exist in production
   }
 }
-```
-
----
-
-### 4. Reset Password (OTP দিয়ে নতুন password)
-```
+4. Reset Password (New password with OTP)
 POST /api/reset-password.php
 
 Request:
@@ -146,12 +123,7 @@ Response (200):
   "success": true,
   "message": "Password reset successful"
 }
-```
-
----
-
-### 5. Profile (Protected — token লাগবে)
-```
+5. Profile (Protected — requires token)
 GET /api/profile.php
 
 Header:
@@ -170,81 +142,67 @@ Response (200):
     }
   }
 }
-```
-
----
-
-## 📱 App এ কীভাবে ব্যবহার করবে
-
-### Flutter / Dart
-```dart
+📱 Implementation in App
+Flutter / Dart
+Dart
 // Login
 final response = await http.post(
-  Uri.parse('https://yoursite.com/api/login.php'),
+  Uri.parse('[https://yoursite.com/api/login.php](https://yoursite.com/api/login.php)'),
   headers: {'Content-Type': 'application/json'},
   body: jsonEncode({'email': email, 'password': password}),
 );
 final data = jsonDecode(response.body);
-final token = data['data']['token']; // এটা SharedPreferences এ save করো
+final token = data['data']['token']; // Save this in SharedPreferences
 
 // Protected API call
 final profileRes = await http.get(
-  Uri.parse('https://yoursite.com/api/profile.php'),
+  Uri.parse('[https://yoursite.com/api/profile.php](https://yoursite.com/api/profile.php)'),
   headers: {'Authorization': 'Bearer $token'},
 );
-```
-
-### React Native / JavaScript
-```javascript
+React Native / JavaScript
+JavaScript
 // Login
-const res = await fetch('https://yoursite.com/api/login.php', {
+const res = await fetch('[https://yoursite.com/api/login.php](https://yoursite.com/api/login.php)', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ email, password })
 });
 const data = await res.json();
-const token = data.data.token; // AsyncStorage এ save করো
+const token = data.data.token; // Save in AsyncStorage
 
 // Protected API
-const profile = await fetch('https://yoursite.com/api/profile.php', {
+const profile = await fetch('[https://yoursite.com/api/profile.php](https://yoursite.com/api/profile.php)', {
   headers: { 'Authorization': `Bearer ${token}` }
 });
-```
+🔒 Security Features
+✅ Password bcrypt hashing (never stores plain text)
 
----
+✅ JWT token authentication
 
-## 🔒 Security Features
+✅ SQL Injection protection (prepared statements)
 
-- ✅ Password bcrypt hashing (plain text store হয় না)
-- ✅ JWT token authentication
-- ✅ SQL Injection protection (prepared statements)
-- ✅ OTP expiry (1 ঘণ্টা)
-- ✅ config/ folder publicly blocked
-- ✅ Same error message for wrong email/password (brute force protection)
+✅ OTP expiry (1 hour)
 
----
+✅ config/ folder access blocked
 
-## 📧 Production এ Email Setup
+✅ Consistent error messages for security
 
-`forgot-password.php` এ PHPMailer দিয়ে email পাঠাও:
+📧 Production Email Setup
+Configure PHPMailer in forgot-password.php:
 
-```bash
+Bash
 composer require phpmailer/phpmailer
-```
-
-```php
+PHP
 use PHPMailer\PHPMailer\PHPMailer;
 $mail = new PHPMailer();
 $mail->isSMTP();
 $mail->Host = 'smtp.gmail.com';
-$mail->Username = 'তোমার@gmail.com';
+$mail->Username = 'your@gmail.com';
 $mail->Password = 'app_password';
 $mail->Port = 587;
-$mail->setFrom('তোমার@gmail.com');
+$mail->setFrom('your@gmail.com');
 $mail->addAddress($email);
 $mail->Subject = 'Password Reset OTP';
 $mail->Body = "Your OTP: $otp";
 $mail->send();
-```
-
-Production এ `DEV_MODE` false করতে ভুলো না!
+Note: Ensure DEV_MODE is set to false in production!
